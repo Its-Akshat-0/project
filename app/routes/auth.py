@@ -129,6 +129,20 @@ def instructor_dashboard():
     return render_template('Instructor_dashboard.html', data=data)
 
 
+@auth.route('/instructors/add', methods=['GET', 'POST'])
+@login_required
+def add_instructor_page():
+    if request.method == 'POST':
+        instructor_name = request.form['instructor_name']
+        expertise = request.form['expertise']
+        contact = request.form['contact']
+        db.session.add(Instructors(instructor_name=instructor_name, expertise=expertise, contact=contact))
+        db.session.commit()
+        flash("Instructor added successfully!")
+        return redirect(url_for('auth.instructor_dashboard'))
+    return render_template('add_instructor.html')
+
+
 # -------- COURSES --------
 @auth.route('/courses')
 @login_required

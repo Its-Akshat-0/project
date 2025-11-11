@@ -18,22 +18,11 @@
     <button onclick="showViewMode()" id="viewBtn" class="view-btn" style="font-weight: 600;">
       <i class="fas fa-list"></i> View Instructors
     </button>
-    <button onclick="showAddMode()" id="addBtn" class="insert-btn" style="font-weight: 600;" title="Feature coming soon">
-      <i class="fas fa-user-tie"></i> Add New Instructor
-    </button>
-  </div>
-
-  <!-- Add Instructor Form (Initially Hidden - Placeholder) -->
-  <div id="addForm" class="card" style="display:none; animation: slideDown 0.3s ease-out;">
-    <h2>➕ Add New Instructor</h2>
-    <div style="padding: 20px; text-align: center;">
-      <i class="fas fa-tools" style="font-size: 40px; color: #667eea; margin-bottom: 15px;"></i>
-      <p style="color: #666; font-size: 16px; margin-bottom: 10px;">🚀 <strong>Feature Coming Soon</strong></p>
-      <p style="color: #999;">Instructor management functionality will be available in the next update.</p>
-      <button type="button" class="delete-btn" style="margin-top: 15px;" onclick="showViewMode()">
-        <i class="fas fa-times"></i> Close
+    <a href="{{ url_for('auth.add_instructor_page') }}" style="text-decoration:none;">
+      <button id="addBtn" class="insert-btn" style="font-weight: 600;">
+        <i class="fas fa-user-tie"></i> Add New Instructor
       </button>
-    </div>
+    </a>
   </div>
 
   <!-- Instructors Table (Initially Visible) -->
@@ -114,18 +103,29 @@
 <!-- 🧠 Page-specific Scripts -->
 {% block scripts %}
 <script>
+  // Defensive helpers: some pages navigate to a dedicated add page instead of toggling inline
   function showAddMode() {
-    document.getElementById("addForm").style.display = "block";
-    document.getElementById("viewForm").style.display = "none";
-    document.getElementById("addBtn").style.opacity = "1";
-    document.getElementById("viewBtn").style.opacity = "0.6";
+    const addForm = document.getElementById("addForm");
+    const viewForm = document.getElementById("viewForm");
+    const addBtn = document.getElementById("addBtn");
+    const viewBtn = document.getElementById("viewBtn");
+    if (addForm && viewForm) {
+      addForm.style.display = "block";
+      viewForm.style.display = "none";
+    }
+    if (addBtn) addBtn.style.opacity = "1";
+    if (viewBtn) viewBtn.style.opacity = "0.6";
   }
 
   function showViewMode() {
-    document.getElementById("viewForm").style.display = "block";
-    document.getElementById("addForm").style.display = "none";
-    document.getElementById("viewBtn").style.opacity = "1";
-    document.getElementById("addBtn").style.opacity = "0.6";
+    const addForm = document.getElementById("addForm");
+    const viewForm = document.getElementById("viewForm");
+    const addBtn = document.getElementById("addBtn");
+    const viewBtn = document.getElementById("viewBtn");
+    if (viewForm) viewForm.style.display = "block";
+    if (addForm) addForm.style.display = "none";
+    if (viewBtn) viewBtn.style.opacity = "1";
+    if (addBtn) addBtn.style.opacity = "0.6";
   }
 
   document.addEventListener("DOMContentLoaded", () => {
