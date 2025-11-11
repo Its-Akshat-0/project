@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block title %}Enrollment Dashboard{% endblock %}
+
+{% block content %}
+<div class="container">
+  <!-- Header with Back Button -->
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+    <h1>📘 Enrollment Dashboard</h1>
+    <a href="{{ url_for('auth.admin_dashboard') }}" style="text-decoration: none;">
+      <button style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s ease;">
+        <i class="fas fa-arrow-left"></i> Back to Admin
+      </button>
+    </a>
+  </div>
+
+  <!-- View/Add Toggle Buttons -->
+  <div class="add-btn-container" style="display: flex; gap: 15px; justify-content: center; margin-bottom: 30px;">
+    <a href="{{ url_for('auth.enrollment_dashboard') }}" style="text-decoration: none;">
+      <button id="viewBtn" class="view-btn" style="font-weight: 600;">
+        <i class="fas fa-list"></i> View Enrollments
+      </button>
+    </a>
+    <a href="{{ url_for('auth.add_enrollment_page') }}" style="text-decoration: none;">
+      <button id="addBtn" class="insert-btn" style="font-weight: 600;">
+        <i class="fas fa-user-check"></i> Add New Enrollment
+      </button>
+    </a>
+  </div>
+
+  <!-- Enrollment Table -->
+  <div id="viewForm" class="card" style="animation: fadeInUp 0.3s ease-out;">
+    <h2>📊 Existing Enrollments</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>User</th>
+          <th>Course</th>
+          <th>Date</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for e in data %}
+        <tr>
+          <td><strong>#{{ e.enrollment_id }}</strong></td>
+          <td>{{ e.user.username }}</td>
+          <td>{{ e.course.course_name }}</td>
+          <td>
+            <small style="color: #666;">
+              {{ e.enrollment_date.strftime('%b %d, %Y') if e.enrollment_date else 'N/A' }}
+            </small>
+          </td>
+          <td>
+            <span class="status {{ e.status|lower }}">
+              {{ e.status }}
+            </span>
+          </td>
+          <td>
+            <button onclick="confirmDelete({{ e.enrollment_id }})" class="delete-btn" title="Delete enrollment">
+              <i class="fas fa-trash"></i> Delete
+            </button>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" style="text-align:center; padding: 30px;">
+          <i class="fas fa-inbox" style="font-size: 32px; color: #ccc; margin-bottom: 10px;"></i>
+          <p style="color: #999;">No enrollments found. <a href="#" onclick="showAddMode(); return false;" style="color: #667eea; text-decoration: none; font-weight: 600;">Create one</a> to get started!</p>
+        </td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<style>
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+<!-- 🧠 Page-specific Scripts -->
+{% block scripts %}{% endblock %}
+{% endblock %}

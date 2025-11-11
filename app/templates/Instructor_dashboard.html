@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+{% block title %}Instructors Dashboard{% endblock %}
+
+{% block content %}
+<div class="container">
+  <!-- Header with Back Button -->
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+    <h1>👨‍🏫 Instructors Dashboard</h1>
+    <a href="{{ url_for('auth.admin_dashboard') }}" style="text-decoration: none;">
+      <button style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s ease;">
+        <i class="fas fa-arrow-left"></i> Back to Admin
+      </button>
+    </a>
+  </div>
+
+  <!-- View/Add Toggle Buttons -->
+  <div class="add-btn-container" style="display: flex; gap: 15px; justify-content: center; margin-bottom: 30px;">
+    <button onclick="showViewMode()" id="viewBtn" class="view-btn" style="font-weight: 600;">
+      <i class="fas fa-list"></i> View Instructors
+    </button>
+    <button onclick="showAddMode()" id="addBtn" class="insert-btn" style="font-weight: 600;" title="Feature coming soon">
+      <i class="fas fa-user-tie"></i> Add New Instructor
+    </button>
+  </div>
+
+  <!-- Add Instructor Form (Initially Hidden - Placeholder) -->
+  <div id="addForm" class="card" style="display:none; animation: slideDown 0.3s ease-out;">
+    <h2>➕ Add New Instructor</h2>
+    <div style="padding: 20px; text-align: center;">
+      <i class="fas fa-tools" style="font-size: 40px; color: #667eea; margin-bottom: 15px;"></i>
+      <p style="color: #666; font-size: 16px; margin-bottom: 10px;">🚀 <strong>Feature Coming Soon</strong></p>
+      <p style="color: #999;">Instructor management functionality will be available in the next update.</p>
+      <button type="button" class="delete-btn" style="margin-top: 15px;" onclick="showViewMode()">
+        <i class="fas fa-times"></i> Close
+      </button>
+    </div>
+  </div>
+
+  <!-- Instructors Table (Initially Visible) -->
+  <div id="viewForm" class="card" style="animation: fadeInUp 0.3s ease-out;">
+    <h2>📊 Existing Instructors</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Expertise</th>
+          <th>Contact</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for instructor in data %}
+        <tr>
+          <td><strong>#{{ instructor.instructor_id }}</strong></td>
+          <td>{{ instructor.instructor_name }}</td>
+          <td>
+            <span style="background: linear-gradient(135deg, #667eea15, #764ba215); padding: 6px 10px; border-radius: 6px; display: inline-block;">
+              {{ instructor.expertise }}
+            </span>
+          </td>
+          <td>
+            <a href="tel:{{ instructor.contact }}" style="color: #667eea; text-decoration: none;">
+              {{ instructor.contact }}
+            </a>
+          </td>
+          <td>
+            <a href="{{ url_for('auth.update_instructor', id=instructor.instructor_id) }}" style="text-decoration: none;">
+              <button class="edit-btn" title="Edit instructor">
+                <i class="fas fa-edit"></i> Edit
+              </button>
+            </a>
+            <!-- Delete not implemented yet -->
+            <button class="delete-btn" disabled title="Delete not implemented">
+              <i class="fas fa-trash"></i> Delete
+            </button>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="5" style="text-align:center; padding: 30px;">
+          <i class="fas fa-inbox" style="font-size: 32px; color: #ccc; margin-bottom: 10px;"></i>
+          <p style="color: #999;">No instructors found.</p>
+        </td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<style>
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+</style>
+
+<!-- 🧠 Page-specific Scripts -->
+{% block scripts %}
+<script>
+  function showAddMode() {
+    document.getElementById("addForm").style.display = "block";
+    document.getElementById("viewForm").style.display = "none";
+    document.getElementById("addBtn").style.opacity = "1";
+    document.getElementById("viewBtn").style.opacity = "0.6";
+  }
+
+  function showViewMode() {
+    document.getElementById("viewForm").style.display = "block";
+    document.getElementById("addForm").style.display = "none";
+    document.getElementById("viewBtn").style.opacity = "1";
+    document.getElementById("addBtn").style.opacity = "0.6";
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    // alerts handled centrally in script.js
+  });
+</script>
+{% endblock %}
+{% endblock %}

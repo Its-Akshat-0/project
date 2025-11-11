@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Update Enrollment{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+    <h1>✏️ Update Enrollment</h1>
+    <a href="{{ url_for('auth.enrollment_dashboard') }}" style="text-decoration:none;">
+      <button class="view-btn">⬅ Back</button>
+    </a>
+  </div>
+
+  <div class="card" style="max-width:700px; margin:0 auto;">
+    <form method="POST">
+      <label for="user_id">User ID</label>
+      <input id="user_id" name="user_id" type="number" value="{{ enrollment.user_id }}" required>
+
+      <label for="course_id">Course ID</label>
+      <input id="course_id" name="course_id" type="number" value="{{ enrollment.course_id }}" required>
+
+      <div style="display:flex; gap:12px; margin-top:14px;">
+        <button type="submit" class="insert-btn" style="flex:1;">💾 Save Changes</button>
+        <a href="{{ url_for('auth.enrollment_dashboard') }}" style="flex:1; text-decoration:none;">
+          <button type="button" class="delete-btn" style="width:100%;">✖ Cancel</button>
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

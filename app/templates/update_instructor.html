@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Update Instructor{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+    <h1>✏️ Update Instructor</h1>
+    <a href="{{ url_for('auth.instructor_dashboard') }}" style="text-decoration:none;">
+      <button class="view-btn">⬅ Back</button>
+    </a>
+  </div>
+
+  <div class="card" style="max-width:700px; margin:0 auto;">
+    <form method="POST">
+      <label for="instructor_name">Name</label>
+      <input id="instructor_name" name="instructor_name" type="text" value="{{ instructor.instructor_name }}" required>
+
+      <label for="expertise">Expertise</label>
+      <input id="expertise" name="expertise" type="text" value="{{ instructor.expertise }}">
+
+      <label for="contact">Contact</label>
+      <input id="contact" name="contact" type="text" value="{{ instructor.contact }}">
+
+      <div style="display:flex; gap:12px; margin-top:14px;">
+        <button type="submit" class="insert-btn" style="flex:1;">💾 Save Changes</button>
+        <a href="{{ url_for('auth.instructor_dashboard') }}" style="flex:1; text-decoration:none;">
+          <button type="button" class="delete-btn" style="width:100%;">✖ Cancel</button>
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

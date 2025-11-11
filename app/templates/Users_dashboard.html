@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block title %}Users Dashboard{% endblock %}
+
+{% block content %}
+<div class="container">
+  <!-- Header with Back Button -->
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+    <h1>👥 Users Dashboard</h1>
+    <a href="{{ url_for('auth.admin_dashboard') }}" style="text-decoration: none;">
+      <button style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s ease;">
+        <i class="fas fa-arrow-left"></i> Back to Admin
+      </button>
+    </a>
+  </div>
+
+  <!-- View/Add Toggle Buttons -->
+  <div class="add-btn-container" style="display: flex; gap: 15px; justify-content: center; margin-bottom: 30px;">
+    <a href="{{ url_for('auth.users_dashboard') }}" style="text-decoration: none;">
+      <button id="viewBtn" class="view-btn" style="font-weight: 600;">
+        <i class="fas fa-list"></i> View Users
+      </button>
+    </a>
+    <a href="{{ url_for('auth.add_user_page') }}" style="text-decoration: none;">
+      <button id="addBtn" class="insert-btn" style="font-weight: 600;">
+        <i class="fas fa-user-plus"></i> Add New User
+      </button>
+    </a>
+  </div>
+
+  <!-- Users Table -->
+  <div id="viewForm" class="card" style="animation: fadeInUp 0.3s ease-out;">
+    <h2>📊 Existing Users</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Username</th>
+          <th>Email Address</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for user in data %}
+        <tr>
+          <td><strong>#{{ user.user_id }}</strong></td>
+          <td>{{ user.username }}</td>
+          <td>{{ user.email }}</td>
+          <td>
+            <a href="{{ url_for('auth.update_user', id=user.user_id) }}" style="text-decoration: none;">
+              <button class="edit-btn" title="Edit user">
+                <i class="fas fa-edit"></i> Edit
+              </button>
+            </a>
+            <button onclick="confirmDelete({{ user.user_id }})" class="delete-btn" title="Delete user">
+              <i class="fas fa-trash"></i> Delete
+            </button>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="4" style="text-align:center; padding: 30px;">
+          <i class="fas fa-inbox" style="font-size: 32px; color: #ccc; margin-bottom: 10px;"></i>
+          <p style="color: #999;">No users found. <a href="#" onclick="showAddMode(); return false;" style="color: #667eea; text-decoration: none; font-weight: 600;">Create one</a> to get started!</p>
+        </td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<style>
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+</style>
+
+<!-- 🧠 Page-specific Scripts -->
+{% block scripts %}{% endblock %}
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Update Record{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+    <h1>✏️ Update Record</h1>
+    <a href="{{ request.referrer or url_for('auth.admin_dashboard') }}" style="text-decoration:none;">
+      <button class="view-btn">⬅ Back</button>
+    </a>
+  </div>
+
+  <div class="card" style="max-width:700px; margin:0 auto;">
+    <form method="POST">
+      {# Skip private attrs and the primary key fields (common names: id or user_id) #}
+      {% for field, value in user.__dict__.items() if not field.startswith('_') and field not in ['id', 'user_id'] %}
+        <label for="{{ field }}">{{ field|replace('_',' ')|capitalize }}</label>
+        <input id="{{ field }}" name="{{ field }}" type="text" value="{{ value }}">
+      {% endfor %}
+
+      <div style="display:flex; gap:12px; margin-top:14px;">
+        <button type="submit" class="insert-btn" style="flex:1;">💾 Save Changes</button>
+        <a href="{{ url_for('auth.admin_dashboard') }}" style="flex:1; text-decoration:none;">
+          <button type="button" class="delete-btn" style="width:100%;">✖ Cancel</button>
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
