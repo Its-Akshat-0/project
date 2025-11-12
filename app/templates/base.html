@@ -10,27 +10,41 @@
 </head>
 <body>
 
-  <!-- ===== Main Content ===== -->
-  <div class="main-content">
+  <div class="dashboard-layout">
+    
+    <div class="main-content-wrapper">
 
-    <!-- 🔔 Flash Messages -->
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        {% for category, message in messages %}
-          <div class="alert {{ category }}">
-            {{ message }}
-          </div>
-        {% endfor %}
-      {% endif %}
-    {% endwith %}
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="alert {{ category }}">
+              {{ message }}
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
 
-    <!-- Page Content -->
-    {% block content %}{% endblock %}
+      <div class="main-content">
+        {% block content %}{% endblock %}
+      </div>
+      
+    </div>
   </div>
 
-  <!-- Default scripts block: loads centralized script.js -->
+  <div id="custom-modal-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999; justify-content:center; align-items:center;">
+    <div id="custom-modal" style="background:white; padding:30px; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,0.3); max-width:400px; width:90%; text-align:center;">
+      <i class="fas fa-exclamation-triangle" style="font-size: 32px; color: #f39c12; margin-bottom: 15px;"></i>
+      <h3 style="font-size: 1.25em; margin-bottom: 20px; color: #34495e;">Confirm Deletion</h3>
+      <p id="modal-message" style="margin-bottom: 25px;">Are you sure you want to delete this item? This action cannot be undone.</p>
+      <div style="display:flex; justify-content: space-around;">
+        <button id="modal-cancel-btn" class="view-btn" style="background: #95a5a6; padding: 10px 20px; font-weight: 500;">Cancel</button>
+        <button id="modal-confirm-btn" class="delete-btn" style="padding: 10px 20px; font-weight: 500;">Delete Permanently</button>
+      </div>
+    </div>
+  </div>
+
   {% block scripts %}
-    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/script.js', v='1.1') }}"></script>
   {% endblock %}
 
 </body>

@@ -10,9 +10,6 @@ auth = Blueprint('auth', __name__)
 def login_required(f):
     """Decorator that allows access if either a Flask-Login user is authenticated
     or the legacy admin session flag ('admin') is present.
-
-    This keeps backward compatibility with the existing admin login while
-    enabling Flask-Login for regular Users.
     """
     @wraps(f)
     def decorated(*args, **kwargs):
@@ -22,7 +19,7 @@ def login_required(f):
         return redirect(url_for('auth.login'))
     return decorated
 
-# -------- LOGIN --------
+# -------- LOGIN / LOGOUT --------
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -66,7 +63,9 @@ def admin_dashboard():
     return render_template('admin_dashboard.html')
 
 
-# -------- USERS --------
+# ==================================
+# -------- USERS CRUD ROUTES --------
+# ==================================
 @auth.route('/users')
 @login_required
 def users_dashboard():
@@ -90,6 +89,7 @@ def add_user_page():
 @auth.route('/users/add-old', methods=['POST'])
 @login_required
 def add_user():
+    # Kept for backward compatibility if needed, though add_user_page handles POST
     username = request.form['username']
     email = request.form['email']
     password = request.form['password']
@@ -115,13 +115,23 @@ def update_user(id):
 @auth.route('/users/delete/<int:id>')
 @login_required
 def delete_user(id):
+    """Deletes a user only if they have no active enrollments."""
     user = Users.query.get_or_404(id)
+    
+    # Check if the user has any enrollments before deleting
+    if user.enrollments:
+        flash(f"❌ Cannot delete user **{user.username}**. They have {len(user.enrollments)} active enrollment(s). Delete enrollments first.", 'error')
+        return redirect(url_for('auth.users_dashboard'))
+        
     db.session.delete(user)
     db.session.commit()
+    flash(f"✅ User '{user.username}' deleted successfully!", 'success')
     return redirect(url_for('auth.users_dashboard'))
 
 
-# -------- INSTRUCTORS --------
+# =======================================
+# -------- INSTRUCTORS CRUD ROUTES --------
+# =======================================
 @auth.route('/instructors')
 @login_required
 def instructor_dashboard():
@@ -143,7 +153,39 @@ def add_instructor_page():
     return render_template('add_instructor.html')
 
 
-# -------- COURSES --------
+@auth.route('/instructors/update/<int:id>', methods=['GET', 'POST'])
+@login_required
+def update_instructor(id):
+    instructor = Instructors.query.get_or_404(id)
+    if request.method == 'POST':
+        instructor.instructor_name = request.form.get('instructor_name')
+        instructor.expertise = request.form.get('expertise')
+        instructor.contact = request.form.get('contact')
+        db.session.commit()
+        flash("Instructor updated successfully!")
+        return redirect(url_for('auth.instructor_dashboard'))
+    return render_template('update_instructor.html', instructor=instructor)
+
+
+@auth.route('/instructors/delete/<int:id>')
+@login_required
+def delete_instructor(id):
+    """Deletes an instructor only if they are not teaching any courses."""
+    instructor = Instructors.query.get_or_404(id)
+    # Check if the instructor is associated with any courses before deleting
+    if instructor.courses:
+        flash(f"❌ Cannot delete instructor **{instructor.instructor_name}**. They are associated with {len(instructor.courses)} course(s).", 'error')
+        return redirect(url_for('auth.instructor_dashboard'))
+        
+    db.session.delete(instructor)
+    db.session.commit()
+    flash(f"✅ Instructor '{instructor.instructor_name}' deleted successfully!", 'success')
+    return redirect(url_for('auth.instructor_dashboard'))
+
+
+# =====================================
+# -------- COURSES CRUD ROUTES --------
+# =====================================
 @auth.route('/courses')
 @login_required
 def course_dashboard():
@@ -169,6 +211,7 @@ def add_course_page():
 @auth.route('/courses/add-old', methods=['POST'])
 @login_required
 def add_course():
+    # Kept for backward compatibility if needed
     course_id = request.form['course_id']
     course_name = request.form['course_name']
     instructor_id = request.form['instructor_id']
@@ -201,24 +244,10 @@ def update_course(id):
     return render_template('update_course.html', course=course)
 
 
-# -------- INSTRUCTOR UPDATE --------
-@auth.route('/instructors/update/<int:id>', methods=['GET', 'POST'])
-@login_required
-def update_instructor(id):
-    instructor = Instructors.query.get_or_404(id)
-    if request.method == 'POST':
-        instructor.instructor_name = request.form.get('instructor_name')
-        instructor.expertise = request.form.get('expertise')
-        instructor.contact = request.form.get('contact')
-        db.session.commit()
-        flash("Instructor updated successfully!")
-        return redirect(url_for('auth.instructor_dashboard'))
-    return render_template('update_instructor.html', instructor=instructor)
-
-
 @auth.route('/courses/delete/<int:id>')
 @login_required
 def delete_course(id):
+    """Deletes a course."""
     course = Courses.query.get_or_404(id)
     db.session.delete(course)
     db.session.commit()
@@ -226,7 +255,9 @@ def delete_course(id):
     return redirect(url_for('auth.course_dashboard'))
 
 
-# -------- ENROLLMENTS --------
+# =========================================
+# -------- ENROLLMENTS CRUD ROUTES --------
+# =========================================
 @auth.route('/enrollments')
 @login_required
 def enrollment_dashboard():
@@ -282,7 +313,6 @@ def add_enrollment():
     return redirect(url_for('auth.enrollment_dashboard'))
 
 
-
 @auth.route('/enrollments/update/<int:id>', methods=['GET', 'POST'])
 @login_required
 def update_enrollment(id):
@@ -317,6 +347,7 @@ def update_enrollment(id):
 @auth.route('/enrollments/delete/<int:id>')
 @login_required
 def delete_enrollment(id):
+    """Deletes an enrollment record."""
     e = Enrollments.query.get_or_404(id)
     db.session.delete(e)
     db.session.commit()
